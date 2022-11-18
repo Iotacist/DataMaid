@@ -73,7 +73,7 @@ Function Get-DiskSpace {
 	Return $DiskSpace
 }
 
-Function Enum-Profiles {
+Function Get-Profiles {
 	# Enumerates User Profiles
 	$UserProfiles = Get-WmiObject -Class Win32_UserProfile -filter "not SID like '%-500' and Special = False" 
 	$ProfileList=@()
@@ -131,7 +131,7 @@ Function Clear-SCCMCache {
 Function Clear-Updates {
 	Get-Service -Name wuauserv | Stop-Service -Force -Verbose -ErrorAction SilentlyContinue
 	Start-Process "dism.exe" -ArgumentList "/online /cleanup-image /spsuperseded" -NoNewWindow -Wait -PassThru | Out-Null
-	
+
 	Get-ChildItem "$Env:SystemRoot\SoftwareDistribution\*" -Recurse -Force -Verbose -ErrorAction SilentlyContinue | `
 		Remove-Item -Force -Verbose -Recurse -ErrorAction SilentlyContinue
 	
@@ -161,7 +161,7 @@ Function Clear-SysTemp {
 }
 
 Function Clear-UserTemp {
-	# Clean User Temp Directories, pass Output of Enum-Profiles to $ProfileList
+	# Clean User Temp Directories, pass Output of Get-Profiles to $ProfileList
 	Param (
 		[Int]$Days,
 		$ProfileList
@@ -509,7 +509,7 @@ function MainMenu {
 ########################################################################################################################
 $LogDate = Get-Date -Format "MM-d-yy-HH" 
 Start-Transcript -Path "$Env:SystemRoot\Temp\$LogDate.log" -ErrorAction SilentlyContinue
-$ProfileList = Enum-Profiles
+$ProfileList = Get-Profiles
 $DiskSpaceStart = Get-DiskSpace
 Clear-Host
 
