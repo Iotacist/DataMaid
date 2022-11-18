@@ -79,35 +79,34 @@ Function Get-Profiles {
 	$ProfileList=@()
 
 	ForEach ($UserProfile in $UserProfiles) {
-
-			$Rec = New-Object PSObject
-				
-			$Rec | Add-Member -MemberType NoteProperty -Name "ComputerName" -Value $UserProfile.PSComputerName
-			$Rec | Add-Member -MemberType NoteProperty -Name "Path" -Value $UserProfile.LocalPath
-			$Rec | Add-Member -MemberType NoteProperty -Name "SID" -Value $UserProfile.SID
-			$Rec | Add-Member -MemberType NoteProperty -Name "Loaded" -Value $UserProfile.Loaded
+		# Create the PSObject and add members.
+		$Rec = New-Object PSObject
+		$Rec | Add-Member -MemberType NoteProperty -Name "ComputerName" -Value $UserProfile.PSComputerName
+		$Rec | Add-Member -MemberType NoteProperty -Name "Path" -Value $UserProfile.LocalPath
+		$Rec | Add-Member -MemberType NoteProperty -Name "SID" -Value $UserProfile.SID
+		$Rec | Add-Member -MemberType NoteProperty -Name "Loaded" -Value $UserProfile.Loaded
 			
-			# Check Account Status
-			$AccountStatus = $null
-            $AccountStatus = (Get-WmiObject Win32_UserAccount | Where-Object {$_.SID -eq $UserProfile.SID}).Disabled
-            If ($null -ne $AccountStatus) {
-                $Rec | Add-Member -MemberType NoteProperty -Name "Disabled" -Value $AccountStatus
-            } Else {
-                $Rec | Add-Member -MemberType NoteProperty -Name "Disabled" -Value "N/A"
-            }
+		# Check Account Status
+		$AccountStatus = $null
+        $AccountStatus = (Get-WmiObject Win32_UserAccount | Where-Object {$_.SID -eq $UserProfile.SID}).Disabled
+        If ($null -ne $AccountStatus) {
+            $Rec | Add-Member -MemberType NoteProperty -Name "Disabled" -Value $AccountStatus
+        } Else {
+            $Rec | Add-Member -MemberType NoteProperty -Name "Disabled" -Value "N/A"
+        }
 
-			# Lookup Username by SID
-			Try {
-				$objSID = New-Object System.Security.Principal.SecurityIdentifier($UserProfile.SID) 
-				$objUser = $objSID.Translate([System.Security.Principal.NTAccount]) 
-	
-				$Rec | Add-Member -MemberType NoteProperty -Name "UserName" -Value $objUser.Value
-			} Catch {
-				# Tag as Account Unknown if it cannot be resolved.
-				$Rec | Add-Member -MemberType NoteProperty -Name "UserName" -Value "Account Unknown"
-			}
-			# Update array
-			$ProfileList+=$Rec
+		# Lookup Username by SID
+		Try {
+			$objSID = New-Object System.Security.Principal.SecurityIdentifier($UserProfile.SID) 
+			$objUser = $objSID.Translate([System.Security.Principal.NTAccount]) 
+			$Rec | Add-Member -MemberType NoteProperty -Name "UserName" -Value $objUser.Value
+		} Catch {
+			# Tag as Account Unknown if it cannot be resolved.
+			$Rec | Add-Member -MemberType NoteProperty -Name "UserName" -Value "Account Unknown"
+		}
+
+		# Update array
+		$ProfileList+=$Rec
 	}
 	Return $ProfileList
 }
