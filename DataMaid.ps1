@@ -140,8 +140,8 @@ Function Clear-Updates {
 
 Function Clear-Recycler {
 	# Empties Recycle Bin
-	$objShell = New-Object -ComObject Shell.Application  
-	$objFolder = $objShell.Namespace(0xA)
+	#$objShell = New-Object -ComObject Shell.Application  
+	#$objFolder = $objShell.Namespace(0xA)
 	(New-Object -ComObject Shell.Application).NameSpace(0x0a).Items() | Select-Object `
 		Name, `
 		Size, `
