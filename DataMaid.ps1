@@ -140,8 +140,8 @@ Function Clear-Updates {
 
 Function Clear-Recycler {
 	# Empties Recycle Bin
-	#$objShell = New-Object -ComObject Shell.Application  
-	#$objFolder = $objShell.Namespace(0xA)
+	# $objShell = New-Object -ComObject Shell.Application  
+	# $objFolder = $objShell.Namespace(0xA)
 	(New-Object -ComObject Shell.Application).NameSpace(0x0a).Items() | Select-Object `
 		Name, `
 		Size, `
@@ -507,14 +507,15 @@ function MainMenu {
 ########################################################################################################################
 # Main
 ########################################################################################################################
-$LogDate = Get-Date -Format "MM-d-yy-HH" 
-Start-Transcript -Path "$Env:SystemRoot\Temp\$LogDate.log" -ErrorAction SilentlyContinue
+$LogDate = Get-Date -Format "MM-d-yy-HH"
+$HostName = $Env:COMPUTERNAME
+Start-Transcript -Path "$Env:SystemRoot\Temp\$HostName-$LogDate.log" -ErrorAction SilentlyContinue
 $ProfileList = Get-Profiles
 $DiskSpaceStart = Get-DiskSpace
 Clear-Host
 
 # Run Selected options
- Switch (($PSBoundParameters.GetEnumerator()| Where-Object {$_.Value -eq $true}).Key) {
+Switch (($PSBoundParameters.GetEnumerator() | Where-Object {$_.Value -eq $true}).Key) {
 	'SCCM' {
 		Clear-SCCMCache
 	}
@@ -554,12 +555,11 @@ Clear-Host
 	default {
 		MainMenu
 	}
- }
- 
+}
 $DiskSpaceEnd = Get-DiskSpace
 	
 # Write statistics
-Write-Host "Machine: $Env:COMPUTERNAME" 
+Write-Host "Machine: $HostName" 
 Get-Date | Select-Object DateTime 
 Write-Host "Before: $DiskSpaceStart" 
 Write-Host "After: $DiskSpaceEnd" 

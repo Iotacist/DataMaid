@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-        "name": "DataMaid Launcher",
+        "name": "DataMaid",
         "type": "PowerShell",
         "request": "launch",
         "script": "${workspaceFolder}/DataMaid.ps1",
